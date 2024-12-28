@@ -1,6 +1,9 @@
 from pathlib import Path
 from tqdm import tqdm
 
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+
 import cv2
 
 
@@ -31,11 +34,20 @@ def process_image(input_path: Path, output_path: Path) -> None:
 
 
 # INPUT
-img_paths = Path("images").glob("*.png")
+img_paths = sorted(Path("images").glob("*.png"))
 
 # OUTPUT
 output_path = Path("output")
 output_path.mkdir(exist_ok=True, parents=True)
 
-for img_path in tqdm(sorted(img_paths)):
-    process_image(input_path=img_path, output_path=output_path / img_path.name)
+# Multi process
+with ProcessPoolExecutor(max_workers=15) as executor:
+    for _ in tqdm(
+        executor.map(
+            process_image,
+            img_paths,
+            [output_path / img_path.name for img_path in img_paths],
+        ),
+        total=len(img_paths),
+    ):
+        pass
