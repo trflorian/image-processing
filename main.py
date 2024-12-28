@@ -3,7 +3,19 @@ from tqdm import tqdm
 
 import cv2
 
-def process_image(input_path: Path, output_path: Path):
+
+def process_image(input_path: Path, output_path: Path) -> None:
+    """
+    Image processing pipeline:
+    - Remove left/right black border
+    - Resize to 224x224
+
+    Args:
+        input_path (Path): Path to input image
+        output_path (Path): Path to save processed image
+    """
+
+    # Read image
     img = cv2.imread(str(input_path))
 
     # Crop left/right black border
@@ -17,6 +29,7 @@ def process_image(input_path: Path, output_path: Path):
     # Save processed image
     cv2.imwrite(str(output_path), img)
 
+
 # INPUT
 img_paths = Path("images").glob("*.png")
 
@@ -25,7 +38,4 @@ output_path = Path("output")
 output_path.mkdir(exist_ok=True, parents=True)
 
 for img_path in tqdm(sorted(img_paths)):
-    process_image(
-        input_path=img_path,
-        output_path=output_path / img_path.name
-    )
+    process_image(input_path=img_path, output_path=output_path / img_path.name)
