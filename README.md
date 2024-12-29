@@ -2,6 +2,8 @@
 
 A small image processing project exploring how to use multiprocessing to optimize a data procesisng pipeline by parallelizing a CPU bound task on multiple cores.
 
+![Comparison of processing time for different workers](timing.png)
+
 ## Quickstart
 To get started, simply clone the repo, make sure that you have uv installed and then snyc the project dependencies.
 ```
