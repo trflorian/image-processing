@@ -14,7 +14,7 @@ import cv2
 def process_image(input_path: Path, output_path: Path) -> None:
     """
     Image processing pipeline:
-    - Remove left/right black border
+    - Center crop to square aspect ratio
     - Resize to 224x224
 
     Args:
@@ -25,9 +25,9 @@ def process_image(input_path: Path, output_path: Path) -> None:
     # Read image
     img = cv2.imread(str(input_path))
 
-    # Crop left/right black border
-    border_width = 270
-    img = img[:, border_width:-border_width, :]
+    # Crop to square aspect ratio assuming width > height
+    height, width, _ = img.shape
+    img = img[:, (width - height) // 2 : (width + height) // 2, :]
 
     # Resize to fixed size
     target_size = 224
