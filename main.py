@@ -25,13 +25,19 @@ def process_image(input_path: Path, output_path: Path) -> None:
     # Read image
     img = cv2.imread(str(input_path))
 
-    # Crop to square aspect ratio assuming width > height
+    # Crop to square aspect ratio
     height, width, _ = img.shape
-    img = img[:, (width - height) // 2 : (width + height) // 2, :]
+    if height > width:
+        img = img[(height - width) // 2 : (height + width) // 2, :, :]
+    elif width > height:
+        img = img[:, (width - height) // 2 : (width + height) // 2, :]
 
     # Resize to fixed size
     target_size = 224
     img = cv2.resize(img, (target_size, target_size))
+
+    # Create output directory if it does not exist
+    output_path.parent.mkdir(exist_ok=True, parents=True)
 
     # Save processed image
     cv2.imwrite(str(output_path), img)
@@ -129,7 +135,7 @@ if __name__ == "__main__":
     # INPUT
     input_paths = []
     for img_ext in args.image_extensions:
-        input_paths += list(args.input_path.glob(f"*.{img_ext}"))
+        input_paths += list(args.input_path.rglob(f"*.{img_ext}"))
     input_paths = sorted(input_paths)
 
     subset = args.subset
@@ -140,7 +146,7 @@ if __name__ == "__main__":
     # OUTPUT
     output_path = args.output_path
     output_path.mkdir(exist_ok=True, parents=True)
-    output_paths = [output_path / img_path.name for img_path in input_paths]
+    output_paths = [output_path / img_path.relative_to(args.input_path) for img_path in input_paths]
 
     if not args.timing:
         # Not timing, just run image processing once
